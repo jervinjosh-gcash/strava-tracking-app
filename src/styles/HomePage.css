@@ -1,0 +1,63 @@
+p {
+  font-size: 20px;
+  color: black;
+}
+
+.home-page{ 
+  justify-content:center;
+  align-items: center;
+}
+
+.hero-page{
+  display: flex;
+  height: 100vh;
+  border: 1px solid green;
+  align-items: center;
+}
+
+.athlete-data{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+}
+
+.update-button{
+  height: 4vh;
+  padding: 10px;
+}
+
+.update-button:hover{
+  cursor: pointer;
+}
+
+.profile-pic{
+  border-radius: 50%;
+  height: 20vh;
+}
+
+.profile-pic-box{
+  padding: 10px;
+}
+
+.stats-page{
+  border: 1px solid gold;
+}
+
+.recent-activity-box{
+  display: flex;
+  padding: 10px;
+}
+
+.recent-activity{
+  border: 1px solid gray;
+  border-radius: 22px;
+  padding: 10px;
+  margin: 5px;
+}
+
+.recent-activity-header{
+  border: 1px solid gray;
+  border-radius: 7px;
+}
+
