@@ -39,9 +39,18 @@ const HomePage = () => {
     }
   };
 
+  const getTimeUpdated = async () => {
+    try{
+      const fetchedTime = await fetchTimeUpdated();
+      setReadableTime(fetchedTime.time_updated);
+    } catch (error) {
+      console.error("Error fetching readable time: ", error);
+    }
+  }
+
   useEffect(() => {
 
-
+    getTimeUpdated();
     getAthleteInfo();
   }, []);
   

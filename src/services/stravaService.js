@@ -128,7 +128,6 @@ export async function fetchAndUploadAthleteActivitiesByDate(accessToken,time_upd
     });
     const activities = await response.json();
     await uploadAthleteActivities(activities);
-    
   } catch (error) {
     console.log("Error fetching and uploading athlete activities:", error);
   }
