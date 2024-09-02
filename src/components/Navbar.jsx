@@ -10,10 +10,10 @@ const Navbar = ({user, onLogout}) => {
   }
   return (
     <nav className="navbar">
-      <NavLink to="/" exact className="nav-link" activeClassName="active">
+      <NavLink to="/" className="nav-link">
         Home
       </NavLink>
-      <NavLink to="/training-log" className="nav-link" activeClassName="active">
+      <NavLink to="/training-log" className="nav-link">
         Training Log
       </NavLink>
       <button onClick={handleLogOutButton}>Log-out</button>
