@@ -1,35 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { fetchStravaCredentials } from "../services/firebaseService";
-import { fetchActivities } from "../services/stravaService";
+import { fetchActivitiesForMonth } from "../services/firebaseService";
+import { fetchActivities, fetchAndUploadAthleteActivities } from "../services/stravaService";
 
 const localizer = momentLocalizer(moment);
 
 const TrainingLog = () => {
   const [events, setEvents] = useState([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+
+
+  const handleMonthChange = useCallback(
+    async (date) => {
+      const year = date.getFullYear().toString();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+
+      const activities = await fetchActivitiesForMonth(year, month);
+
+      const calendarEvents = activities.map((activity) => ({
+        id: activity.id,
+        
+        title: activity.name,
+        start: new Date(activity.start_date),
+        end: new Date(activity.start_date),
+        allDay: false,
+      }));
+
+      setEvents(calendarEvents);
+    },
+    []
+  );
 
   useEffect(() => {
-    const fetchActivitiesFromAPI = async () => {
-      try {
-        const credentials = await fetchStravaCredentials();
-        if (credentials) {
-          const data = await fetchActivities(credentials.stravaAccessToken);
-          const formattedEvents = data.map(activity => ({
-            title: activity.name,
-            start: new Date(activity.start_date),
-            end: new Date(activity.start_date),
-          }));
-          setEvents(formattedEvents);
-        }
-      } catch (error) {
-        console.error("Error fetching activities:", error);
-      }
-    };
+    handleMonthChange(currentDate);
+  }, [handleMonthChange, currentDate]);
 
-    fetchActivitiesFromAPI();
-  }, []);
+
+  const handleNavigate = (date) => {
+    setCurrentDate(date);
+    handleMonthChange(date);
+  };
 
   return (
     <div>
@@ -41,6 +54,8 @@ const TrainingLog = () => {
           startAccessor="start"
           endAccessor="end"
           style={{ height: "100%" }}
+          onNavigate={handleNavigate}
+          defaultView="month"
         />
       </div>
     </div>
