@@ -114,7 +114,6 @@ export async function fetchActivitiesForMonth(year,month) {
     const snapshot = await getDocs(query(athleteRef));
 
     const activities = snapshot.docs.map((doc) => doc.data());
-    console.log(activities);
     return activities;
   } catch (error) {
     console.error('Error fetching activities:', error);
@@ -129,7 +128,6 @@ export async function uploadTimeUpdated(time_updated,unix_time_updated){
   try {
     const statsRef = doc(db, "users", user.uid, "athlete", "time_updated");
     await setDoc(statsRef, {time_updated:time_updated, unix_time_updated:unix_time_updated});
-    console.log("time_updated uploaded successfully");
   } catch (error) {
     console.error("Error uploading time_updated", error);
   }
