@@ -15,7 +15,6 @@ export async function fetchStravaCredentials() {
     if (userDoc.exists()) {
       const { stravaClientId, stravaClientSecret, stravaRefreshToken } = userDoc.data();
 
-      // Fetch a new access token using the refresh token
       const accessToken = await fetchStravaAccessToken(stravaRefreshToken, stravaClientId, stravaClientSecret);
       return { stravaClientId, stravaClientSecret, stravaRefreshToken, stravaAccessToken: accessToken };
     } else {
@@ -115,7 +114,7 @@ export async function fetchActivitiesForMonth(year,month) {
     const snapshot = await getDocs(query(athleteRef));
 
     const activities = snapshot.docs.map((doc) => doc.data());
-    
+    console.log(activities);
     return activities;
   } catch (error) {
     console.error('Error fetching activities:', error);
@@ -123,4 +122,41 @@ export async function fetchActivitiesForMonth(year,month) {
   }
 
 
+}
+
+export async function uploadTimeUpdated(time_updated,unix_time_updated){
+  const user = auth.currentUser;
+  try {
+    const statsRef = doc(db, "users", user.uid, "athlete", "time_updated");
+    await setDoc(statsRef, {time_updated:time_updated, unix_time_updated:unix_time_updated});
+    console.log("time_updated uploaded successfully");
+  } catch (error) {
+    console.error("Error uploading time_updated", error);
+  }
+}
+
+export async function fetchTimeUpdated(){
+  const user = auth.currentUser;
+  try {
+    const timeRef = doc(db, "users", user.uid, "athlete", "time_updated");
+
+    const docSnap = await getDoc(timeRef);
+
+    if (docSnap.exists()){
+      const {time_updated , unix_time_updated} = docSnap.data();
+      return {time_updated, unix_time_updated};
+    } else {
+      return null;
+    }
+
+    
+
+    // const snapshot = await getDocs(query(timeRef));
+
+    // const times = snapshot.docs.map((doc) => doc.data());
+
+    // return times;
+  } catch (error) {
+    console.log("Error in fetching time_updated: ", error);
+  }
 }

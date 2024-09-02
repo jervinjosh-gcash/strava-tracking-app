@@ -119,6 +119,21 @@ export async function fetchAndUploadAthleteStats(accessToken,athleteId) {
   }
 }
 
+export async function fetchAndUploadAthleteActivitiesByDate(accessToken,time_updated){
+  try {
+    const response = await fetch(`${STRAVA_API_URL}/athlete/activities?per_page=?after=${time_updated}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const activities = await response.json();
+    await uploadAthleteActivities(activities);
+    
+  } catch (error) {
+    console.log("Error fetching and uploading athlete activities:", error);
+  }
+}
+
 export async function fetchAndUploadAthleteActivities(accessToken) {
   let page = 1;
   const perPage = 200;
@@ -136,11 +151,6 @@ export async function fetchAndUploadAthleteActivities(accessToken) {
 
       if (response.status !== 200 || !activities) {
         console.error('Failed to fetch activities from Strava API', response);
-        break;
-      }
-
-      if (!Array.isArray(activities)) {
-        console.error('Unexpected response format from Strava API:', activities);
         break;
       }
 
