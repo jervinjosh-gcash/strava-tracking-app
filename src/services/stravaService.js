@@ -1,10 +1,10 @@
-import { uploadAthleteData , uploadAthleteStats } from "./firebaseService";
+import { uploadAthleteData , uploadAthleteStats, uploadAthleteActivities } from "./firebaseService";
 
 // src/services/stravaService.js
 const STRAVA_API_URL = "https://www.strava.com/api/v3";
 const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 
-// Fetch a new access token using the refresh token
+
 export async function fetchStravaAccessToken(refreshToken, clientId, clientSecret) {
   try {
     const response = await fetch(STRAVA_TOKEN_URL, {
@@ -32,7 +32,6 @@ export async function fetchStravaAccessToken(refreshToken, clientId, clientSecre
   }
 }
 
-// Fetch athlete data using the access token
 export async function fetchAthleteData(accessToken) {
   try {
     const response = await fetch(`${STRAVA_API_URL}/athlete`, {
@@ -52,7 +51,6 @@ export async function fetchAthleteData(accessToken) {
   }
 }
 
-// Fetch activities using the access token
 export async function fetchActivities(accessToken) {
   try {
     const response = await fetch(`${STRAVA_API_URL}/athlete/activities`, {
@@ -121,3 +119,41 @@ export async function fetchAndUploadAthleteStats(accessToken,athleteId) {
   }
 }
 
+export async function fetchAndUploadAthleteActivities(accessToken) {
+  let page = 1;
+  const perPage = 200;
+  let allActivities = [];
+
+  try {
+    while (true) {
+      const response = await fetch(`${STRAVA_API_URL}/athlete/activities?per_page=${perPage}&page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const activities = await response.json();
+
+      if (response.status !== 200 || !activities) {
+        console.error('Failed to fetch activities from Strava API', response);
+        break;
+      }
+
+      if (!Array.isArray(activities)) {
+        console.error('Unexpected response format from Strava API:', activities);
+        break;
+      }
+
+      allActivities = allActivities.concat(activities);
+
+      if (activities.length < perPage) {
+        break;
+      } else {
+        page += 1;
+      }
+    }
+    await uploadAthleteActivities(allActivities);
+  } catch (error) {
+    console.error("Error fetching and uploading athlete activities:", error);
+  }
+};

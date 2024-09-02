@@ -1,6 +1,7 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, writeBatch, getDocs, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { fetchStravaAccessToken } from "./stravaService";
+import { fetchActivities, fetchStravaAccessToken } from "./stravaService";
+import firebase from "firebase/compat/app";
 
 export async function fetchStravaCredentials() {
   const user = auth.currentUser;
@@ -49,6 +50,27 @@ export async function uploadAthleteStats(athleteStats) {
   }
 }
 
+export async function uploadAthleteActivities(athleteActivities){
+  const user = auth.currentUser;
+  try {
+    
+    const batch = writeBatch(db);
+    athleteActivities.forEach((activity) => {
+      const startDate = new Date(activity.start_date);
+      const year = startDate.getUTCFullYear().toString();
+      const month = String(startDate.getUTCMonth() + 1).padStart(2,'0');
+
+      const athleteRef = doc(db, "users", user.uid, "athlete", "all_activities", year, month, "activities", activity.id.toString());
+      batch.set(athleteRef, activity);
+    });
+    await batch.commit();
+    console.log('Activities stored successfully');
+  } catch (error) {
+    console.error('Error fetching or storing activities:', error);
+  }
+
+}
+
 export async function fetchAthleteData() {
   const user = auth.currentUser;
   try {
@@ -83,4 +105,22 @@ export async function fetchAthleteStats() {
     console.error("Error fetching athlete stats:", error);
     throw error;
   }
+}
+
+export async function fetchActivitiesForMonth(year,month) {
+  const user = auth.currentUser;
+  try {
+    const athleteRef = collection(db, "users", user.uid, "athlete", "all_activities", year, month, "activities");
+
+    const snapshot = await getDocs(query(athleteRef));
+
+    const activities = snapshot.docs.map((doc) => doc.data());
+    
+    return activities;
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+    return [];
+  }
+
+
 }

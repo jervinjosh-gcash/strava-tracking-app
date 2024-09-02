@@ -12,8 +12,8 @@ const HomePage = () => {
   const fetchAndUpload = async () => {
     const credentials = await fetchStravaCredentials();
     if (credentials) {
-      // fetchAndUploadAthleteData(credentials.stravaAccessToken);
-      // fetchAndUploadAthleteStats(credentials.stravaAccessToken,athleteData.id);
+      fetchAndUploadAthleteData(credentials.stravaAccessToken);
+      fetchAndUploadAthleteStats(credentials.stravaAccessToken,athleteData.id);
       //fetchAndUploadAthleteActivities(credentials.stravaAccessToken);
     }
   };
