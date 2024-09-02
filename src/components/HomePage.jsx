@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { fetchStravaCredentials, fetchAthleteData, fetchAthleteStats } from "../services/firebaseService";
+import { fetchStravaCredentials, fetchAthleteData, fetchAthleteStats, uploadTimeUpdated, fetchTimeUpdated } from "../services/firebaseService";
 import "../styles/HomePage.css";
-import { fetchAndUploadAthleteActivities, fetchAndUploadAthleteData, fetchAndUploadAthleteStats} from "../services/stravaService";
+import { fetchAndUploadAthleteActivities, fetchAndUploadAthleteData, fetchAndUploadAthleteStats, fetchAndUploadAthleteActivitiesByDate } from "../services/stravaService";
 
 
 const HomePage = () => {
   const [athleteData, setAthleteData] = useState(null);
   const [athleteStats, setAthleteStats] = useState(null);
+  const [unixTime, setUnixTime] = useState(new Date());
+  const [readableTime, setReadableTime] = useState(null);
 
 
   const fetchAndUpload = async () => {
     const credentials = await fetchStravaCredentials();
+    const newUnixTime = Math.floor(Date.now() / 1000);
+    const newTime = new Date();
+    setUnixTime(newUnixTime);
+    setReadableTime(newTime.toLocaleString());
+    const fetchedTime = await fetchTimeUpdated();
     if (credentials) {
       fetchAndUploadAthleteData(credentials.stravaAccessToken);
       fetchAndUploadAthleteStats(credentials.stravaAccessToken,athleteData.id);
-      //fetchAndUploadAthleteActivities(credentials.stravaAccessToken);
+      fetchAndUploadAthleteActivitiesByDate(credentials.stravaAccessToken, fetchedTime.unix_time_updated);
+      uploadTimeUpdated(readableTime,unixTime);
+      
     }
   };
 
@@ -35,7 +44,7 @@ const HomePage = () => {
 
     getAthleteInfo();
   }, []);
-
+  
 
   return (
     <div className="home-page">
@@ -53,6 +62,7 @@ const HomePage = () => {
             </div>
                 <h2>Welcome {athleteData.firstname} {athleteData.lastname}</h2>
                 <h3>Here's a summary of your recent activities.</h3>
+                <h4>Data Last Updated: {readableTime}</h4>
               </div>
 
               <div className="recent-activity-box">

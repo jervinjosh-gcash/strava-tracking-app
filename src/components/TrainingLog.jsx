@@ -3,7 +3,8 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { fetchActivitiesForMonth } from "../services/firebaseService";
-import { fetchActivities, fetchAndUploadAthleteActivities } from "../services/stravaService";
+import "../styles/CalendarStyles.css";
+// import { fetchActivities, fetchAndUploadAthleteActivities } from "../services/stravaService";
 
 const localizer = momentLocalizer(moment);
 
@@ -20,12 +21,13 @@ const TrainingLog = () => {
 
       const activities = await fetchActivitiesForMonth(year, month);
 
-      const calendarEvents = activities.map((activity) => ({
+      const calendarEvents = activities.map((activity) => (
+        {
         id: activity.id,
-        
-        title: activity.name,
+        description: activity.sport_type,
+        title: `${activity.name} - ${(activity.distance / 1000).toFixed(2)}km` ,
         start: new Date(activity.start_date),
-        end: new Date(activity.start_date),
+        end: new Date(activity.start_date).setSeconds(new Date(activity.start_date).getSeconds() + activity.elapsed_time),
         allDay: false,
       }));
 
@@ -53,7 +55,10 @@ const TrainingLog = () => {
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: "100%" }}
+          style={{ 
+            height: "100%",
+            minWidth: "1000px",
+           }}
           onNavigate={handleNavigate}
           defaultView="month"
         />
