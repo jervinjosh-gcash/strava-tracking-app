@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchStravaCredentials, fetchAthleteData, fetchAthleteStats } from "../services/firebaseService";
 import "../styles/HomePage.css";
-import { fetchAndUploadAthleteData, fetchAndUploadAthleteStats} from "../services/stravaService";
+import { fetchAndUploadAthleteActivities, fetchAndUploadAthleteData, fetchAndUploadAthleteStats} from "../services/stravaService";
 
 
 const HomePage = () => {
@@ -12,8 +12,9 @@ const HomePage = () => {
   const fetchAndUpload = async () => {
     const credentials = await fetchStravaCredentials();
     if (credentials) {
-      fetchAndUploadAthleteData(credentials.stravaAccessToken);
-      fetchAndUploadAthleteStats(credentials.stravaAccessToken,athleteData.id);
+      // fetchAndUploadAthleteData(credentials.stravaAccessToken);
+      // fetchAndUploadAthleteStats(credentials.stravaAccessToken,athleteData.id);
+      //fetchAndUploadAthleteActivities(credentials.stravaAccessToken);
     }
   };
 
@@ -24,7 +25,6 @@ const HomePage = () => {
 
       setAthleteData(data);
       setAthleteStats(stats);
-      console.log(stats);
     } catch (error) {
       console.error("Error fetching athlete info:", error);
     }
