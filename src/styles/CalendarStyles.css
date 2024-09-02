@@ -1,0 +1,30 @@
+.rbc-event.red-event {
+  background-color: red;
+  border-color: red;
+  color: white;
+}
+
+.rbc-event.blue-event {
+  background-color: blue;
+  border-color: blue;
+  color: white;
+}
+
+.rbc-event.green-event {
+  background-color: green;
+  border-color: green;
+  color: white;
+}
+
+
+.rbc-event-content {
+  font-size: 16px; 
+  padding: 5px;   
+}
+
+
+.rbc-event {
+  height: 50px;
+  padding: 5px;
+
+}
