@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchStravaCredentials, fetchAthleteData, fetchAthleteStats, uploadTimeUpdated, fetchTimeUpdated, fetchActivitiesForMonth } from "../services/firebaseService";
 import "../styles/HomePage.css";
 import { fetchAndUploadAthleteActivities, fetchAndUploadAthleteData, fetchAndUploadAthleteStats, fetchAndUploadAthleteActivitiesByDate } from "../services/stravaService";
+import { format } from "date-fns";
 
 
 const HomePage = () => {
@@ -10,6 +11,11 @@ const HomePage = () => {
   const [unixTime, setUnixTime] = useState(new Date());
   const [readableTime, setReadableTime] = useState(null);
   const [recentActivities, setRecentActivities] = useState(null);
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return format(date, "EEEE, MMMM d, yyyy, h:mm a");
+  };
 
   const initialUpload = async () => {
     const credentials = await fetchStravaCredentials();
@@ -56,8 +62,9 @@ const HomePage = () => {
   const getTimeUpdated = async () => {
     try{
       const fetchedTime = await fetchTimeUpdated();
-      //console.log((new Date()).getMonth());
+
       setReadableTime(fetchedTime.time_updated);
+      setUnixTime(fetchedTime.unix_time_updated);
     } catch (error) {
       console.error("Error fetching readable time: ", error);
     }
@@ -92,8 +99,9 @@ const HomePage = () => {
     getRecentActivities();
     getTimeUpdated();
     getAthleteInfo();
-    
+
   }, []);
+
 
 
 
@@ -105,8 +113,18 @@ const HomePage = () => {
         <h3>Recent Activities</h3>
         {
         recentActivities.map((activity) => (
-          <div key={activity.id}>
-            {activity.name} - {Date(activity.start_date)}
+          <div className="activity-box" key={activity.id}>
+            <div className="activity-title">
+              {activity.name}
+            </div>
+            <div className="activity-date">
+              {formatDate(activity.start_date)}
+            </div>
+            <div className="activity-details">
+               {activity.type} &middot; {(activity.distance / 1000).toFixed(2)}km &middot; {(activity.elapsed_time/60).toFixed(0)}mins
+            </div>
+            
+            
           </div>
         ))
       }
@@ -134,10 +152,14 @@ const HomePage = () => {
                 <h2>Welcome {athleteData.firstname} {athleteData.lastname}</h2>
                 <h3>Here's a summary of your recent activities.</h3>
                 <h4>Data Last Updated: {readableTime}</h4>
+                              
+              <div className="update-button-box"  >
+                <button onClick={fetchAndUpload}> Refresh Athlete Data</button>
+              </div>
               </div>
 
               <div className="recent-activity-box">
-                <div className="recent-activity">
+                <div className="recent-activity swim">
                   <div className="recent-activity-header">
                     <p>Swim</p>
                   </div>
@@ -148,7 +170,7 @@ const HomePage = () => {
                   </div>
 
                 </div>
-                <div className="recent-activity">
+                <div className="recent-activity ride">
                   <div className="recent-activity-header">
                     <p>Ride</p>
                   </div>
@@ -159,7 +181,7 @@ const HomePage = () => {
                   </div>
 
                 </div>
-                <div className="recent-activity">
+                <div className="recent-activity run">
                   <div className="recent-activity-header">
                     <p>Run</p>
                   </div>
@@ -171,19 +193,74 @@ const HomePage = () => {
 
                 </div>
               </div>
+
+            </div>
+          </div>
+
+          <div className="recent-activity-page">
+            <ShowRecentActivities />
+          </div>
+
+          <div className="stats-page">
+            <div className="all-time-stats-box">
+              <h4>All Time Stats</h4>
+              <div className="all-time-stats swim">
+                <div className="stats-header">
+                  <h5>Swims</h5>
+                </div>
+                
+                <p>Total Activities: {athleteStats.all_swim_totals.count}</p>
+                <p>Total Distance: {(athleteStats.all_swim_totals.distance/ 1000).toFixed(1)}km</p>
+                <p>Total Time: {(athleteStats.all_swim_totals.elapsed_time / 3600 ).toFixed(2)}hrs</p>
+              </div>
+              <div className="all-time-stats ride">
+              <div className="stats-header">
+                  <h5>Ride</h5>
+                </div>
+                <p>Total Activities: {athleteStats.all_ride_totals.count}</p>
+                <p>Total Distance: {(athleteStats.all_ride_totals.distance/ 1000).toFixed(1)}km</p>
+                <p>Total Time: {(athleteStats.all_ride_totals.elapsed_time / 3600 ).toFixed(2)}hrs</p>
+              </div>
+              <div className="all-time-stats">
+              <div className="stats-header">
+                  <h5>Run</h5>
+                </div>
+                <p>Total Activities: {athleteStats.all_run_totals.count}</p>
+                <p>Total Distance: {(athleteStats.all_run_totals.distance/ 1000).toFixed(1)}km</p>
+                <p>Total Time: {(athleteStats.all_run_totals.elapsed_time / 3600 ).toFixed(2)}hrs</p>
+              </div>
+            </div>
+
+            <div className="ytd-stats-box">
+              <h4>Year-to-Date Stats</h4>
               
-              <div className="update-button-box"  >
-                <button onClick={fetchAndUpload}> Refresh Athlete Data</button>
+              <div className="ytd-stats swim">
+              <div className="stats-header">
+                  <h5>Swims</h5>
+                </div>
+                <p>Total Activities: {athleteStats.ytd_swim_totals.count}</p>
+                <p>Total Distance: {(athleteStats.ytd_swim_totals.distance/ 1000).toFixed(1)}km</p>
+                <p>Total Time: {(athleteStats.ytd_swim_totals.elapsed_time / 3600 ).toFixed(2)}hrs</p>
+              </div>
+              <div className="ytd-stats ride">
+              <div className="stats-header">
+                  <h5>Ride</h5>
+                </div>
+                <p>Total Activities: {athleteStats.ytd_ride_totals.count}</p>
+                <p>Total Distance: {(athleteStats.ytd_ride_totals.distance/ 1000).toFixed(1)}km</p>
+                <p>Total Time: {(athleteStats.ytd_ride_totals.elapsed_time / 3600 ).toFixed(2)}hrs</p>
+              </div>
+              <div className="ytd-stats run">
+              <div className="stats-header">
+                  <h5>Run</h5>
+                </div>
+                <p>Total Activities: {athleteStats.ytd_run_totals.count}</p>
+                <p>Total Distance: {(athleteStats.ytd_run_totals.distance/ 1000).toFixed(1)}km</p>
+                <p>Total Time: {(athleteStats.ytd_run_totals.elapsed_time / 3600 ).toFixed(2)}hrs</p>
               </div>
             </div>
 
           </div>
-          <div className="stats-page">
-          <p>Total Rides: {athleteStats.all_ride_totals.count}</p>
-          <p>Total Runs: {athleteStats.all_run_totals.count}</p>
-          <p>Total Swims: {athleteStats.all_swim_totals.count}</p>
-          </div>
-          <ShowRecentActivities />
 
 
         </div>
