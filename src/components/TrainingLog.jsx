@@ -17,6 +17,7 @@ const TrainingLog = () => {
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weeklyDistances, setWeeklyDistances] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
 
   const calculateWeeklyDistances = (events) => {
@@ -91,6 +92,7 @@ const TrainingLog = () => {
 
   const handleMonthChange = useCallback(
     async (date) => {
+      if (!isLoggedIn) return;
       let months = getPrevPostMonths(date).months;
       let years = getPrevPostMonths(date).years;
       const calendarEvents = await getCalendarEvents(years[1],months[1]);
@@ -102,10 +104,13 @@ const TrainingLog = () => {
 
       setEvents([...calendarEvents,...calendarEvents1, ...calendarEvents2]);
       calculateWeeklyDistances([...prevMonthEvents,...calendarEvents, ...postMonthEvents]);
-    },[]);
+    },[isLoggedIn]);
 
   useEffect(() => {
     handleMonthChange(currentDate);
+    return () => {
+      setIsLoggedIn(false);
+    };
   }, [currentDate]);
 
 

@@ -31,21 +31,25 @@ const App = () => {
   return (
     <Router>
       <div className="main-page">
-        {user ? (            
-          <Navbar user={user} onLogout={handleLogout}/> )
+        {user ? (<Navbar user={user} onLogout={handleLogout}/> )
           : (<div></div>)}
+
         <Routes>
           <Route path="/" element={user ? (
-          
           <div>
-
             <HomePage />
           </div>
         ) : (
           <Login onLoginSuccess={() => setUser(auth.currentUser)} />
         )} />
         
-          <Route path="/training-log" element={<TrainingLog />} />
+          <Route path="/training-log" element={user ? (
+          <div>
+            <TrainingLog />
+          </div>
+        ) : (
+          <Login onLoginSuccess={() => setUser(auth.currentUser)} />
+        )} />
         </Routes>
         
       </div>

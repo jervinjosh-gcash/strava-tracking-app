@@ -1,8 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "../styles/Navbar.css"; // Import the CSS file for styling
+import "../styles/Navbar.css";
 
 const Navbar = ({user, onLogout}) => {
+
   const handleLogOutButton = () => {
     if (user) {
       onLogout();
