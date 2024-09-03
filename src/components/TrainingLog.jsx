@@ -4,7 +4,10 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { fetchActivitiesForMonth } from "../services/firebaseService";
 import "../styles/CalendarStyles.css";
+import "../styles/TrainingLog.css"
 // import { fetchActivities, fetchAndUploadAthleteActivities } from "../services/stravaService";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
 
 const localizer = momentLocalizer(moment);
 
@@ -73,11 +76,14 @@ const TrainingLog = () => {
       {
       id: activity.id,
       description: activity.sport_type,
-      title: `${activity.name} - ${(activity.distance / 1000).toFixed(2)}km` ,
+      title: `${activity.type} - ${(activity.distance / 1000).toFixed(2)}km` ,
       start: new Date(activity.start_date),
       end: new Date(activity.start_date).setSeconds(new Date(activity.start_date).getSeconds() + activity.elapsed_time),
+      name: activity.name,
       allDay: false,
-      distance: activity.distance
+      distance: activity.distance,
+      type: activity.type,
+      elapsed_time: (activity.elapsed_time / 3600).toFixed(2),
     }));
     return calendarEvents;
   }
@@ -108,32 +114,72 @@ const TrainingLog = () => {
     handleMonthChange(date);
   };
 
+  // Function to customize event styles
+  const eventStyleGetter = (event) => {
+    let backgroundColor = "#efebe9"; // Default color for "other" type
+
+    switch (event.type.toLowerCase()) {
+      case "run":
+        backgroundColor = "#ffebee"; // Light Red
+        break;
+      case "ride":
+        backgroundColor = "#fff9c4"; // Light Yellow
+        break;
+      case "swim":
+        backgroundColor = "#e0f7fa"; // Light Blue
+        break;
+      default:
+        backgroundColor = "#efebe9"; // Light Brown
+    }
+
+    return {
+      style: {
+        backgroundColor,
+        borderLeft: `5px solid ${backgroundColor}`,
+        color: "#333",
+        borderRadius: "4px",
+        padding: "2px 5px",
+      },
+    };
+  };
+
+  
+
   return (
-    <div>
+    <div className="training-log-page">
       <h2>Training Log</h2>
-      <div>
+      <div className="calendar-box">
+        
         <Calendar
           localizer={localizer}
-          events={events}
+          events={events.map(event => ({
+            ...event,
+            className: `rbc-event ${event.type.toLowerCase()}`
+          }))}
           startAccessor="start"
           endAccessor="end"
-          style={{ 
-            height: "1000px",
-            width: "1500px",
-           }}
           onNavigate={handleNavigate}
           defaultView="month"
-          onSelectEvent={(event) => alert(`Activity: ${event.distance}`)}
+          onSelectEvent={(event) => alert(`${event.name} - ${event.elapsed_time}hrs`)}
+          eventPropGetter={eventStyleGetter}
         />
 
-      <h3>Weekly Distances</h3>
-      <ul>
+      </div>
+      <div className="weekly-volume-box">
+        <div className="weekly-volume-header">
+          <h3>Weekly Volume</h3>
+        </div>
         {Object.entries(weeklyDistances).map(([weekStart, distance]) => (
-          <li key={weekStart}>
-            Week starting {weekStart}: {(distance / 1000).toFixed(2)} km
-          </li>
+          <div className="weekly-volume" key={weekStart}>
+            <div className="week-start">
+              Week starting {weekStart}: 
+            </div>
+            <div className="week-mileage">
+              {(distance / 1000).toFixed(2)} km
+            </div>
+            
+          </div>
         ))}
-      </ul>
       </div>
     </div>
   );

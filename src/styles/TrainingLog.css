@@ -1,0 +1,66 @@
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.training-log-page {
+  width: 90%;
+  max-width: 1200px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.calendar-box {
+  margin-bottom: 20px;
+}
+
+.weekly-volume-box {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  justify-content: center;
+  align-items: center;
+}
+
+.weekly-volume-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.weekly-volume {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  background-color: #ebebeb;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.week-start{
+  color: rgba(26, 25, 25, 0.643);
+}
+
+.week-mileage{
+  font-size: 18px;
+}

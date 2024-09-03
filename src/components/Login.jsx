@@ -41,7 +41,7 @@ const Login = ({ onLoginSuccess }) => {
         </div>
         
         <button className="login-button" onClick={handleLogin}>Login</button>
-        {error && <p style={{ color: "red" }}>{"Invalid email/password"}</p>}
+        {error && <p>{"Invalid email/password"}</p>}
       </div>
 
     </div>

@@ -221,7 +221,7 @@ const HomePage = () => {
                 <p>Total Distance: {(athleteStats.all_ride_totals.distance/ 1000).toFixed(1)}km</p>
                 <p>Total Time: {(athleteStats.all_ride_totals.elapsed_time / 3600 ).toFixed(2)}hrs</p>
               </div>
-              <div className="all-time-stats">
+              <div className="all-time-stats run">
               <div className="stats-header">
                   <h5>Run</h5>
                 </div>

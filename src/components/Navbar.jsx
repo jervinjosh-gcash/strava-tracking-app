@@ -9,15 +9,18 @@ const Navbar = ({user, onLogout}) => {
     }
   }
   return (
-    <nav className="navbar">
-      <NavLink to="/" className="nav-link">
-        Home
-      </NavLink>
-      <NavLink to="/training-log" className="nav-link">
-        Training Log
-      </NavLink>
-      <button onClick={handleLogOutButton}>Log-out</button>
-    </nav>
+    <div className="navbar">
+      <nav>
+        <NavLink to="/" className="nav-link">
+          Home
+        </NavLink>
+        <NavLink to="/training-log" className="nav-link">
+          Training Log
+        </NavLink>
+      </nav>
+      <button className="logout-button" onClick={handleLogOutButton}>Log-out</button>
+    </div>
+
   );
 };
 
