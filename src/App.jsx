@@ -33,7 +33,7 @@ const App = () => {
       <div className="main-page">
         {user ? (            
           <Navbar user={user} onLogout={handleLogout}/> )
-          : (<p>Strava Tracker</p>)}
+          : (<div></div>)}
         <Routes>
           <Route path="/" element={user ? (
           

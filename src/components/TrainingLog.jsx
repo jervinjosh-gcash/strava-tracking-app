@@ -15,14 +15,6 @@ const TrainingLog = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weeklyDistances, setWeeklyDistances] = useState({});
 
-  const getVisibleMonthRange = () => {
-    const today = moment(); 
-    const startOfMonth = moment(today).startOf("month"); 
-    const endOfMonth = moment(today).endOf("month"); 
-    const startOfVisibleWeek = moment(startOfMonth).startOf("week");
-    const endOfVisibleWeek = moment(endOfMonth).endOf("week");
-    return { start: startOfVisibleWeek, end: endOfVisibleWeek };
-  };
 
   const calculateWeeklyDistances = (events) => {
     const weeklyDistances = {};

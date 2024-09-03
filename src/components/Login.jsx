@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import "../styles/Login.css";
 
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -19,22 +20,30 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-      />
-      <button onClick={handleLogin}>Login</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="login-window">
+      <h1>Personal Strava Training Log</h1>
+      <div className="login-box">
+        <div className="form-box">
+        <input 
+          className="form"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+        />
+        <input
+          className="form"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+        />
+        </div>
+        
+        <button className="login-button" onClick={handleLogin}>Login</button>
+        {error && <p style={{ color: "red" }}>{"Invalid email/password"}</p>}
+      </div>
+
     </div>
   );
 };
