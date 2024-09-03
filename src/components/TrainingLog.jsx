@@ -8,57 +8,74 @@ import "../styles/CalendarStyles.css";
 
 const localizer = momentLocalizer(moment);
 
+
+
 const TrainingLog = () => {
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
 
+  const getPrevPostMonths = (date) => {
+    let months = {
+      prevMonth: date.getMonth(),
+      currMonth: date.getMonth() + 1,
+      postMonth: date.getMonth() + 2
+    }
+    let years = {
+      prevMonthYear: date.getFullYear(),
+      currMonthYear: date.getFullYear(),
+      postMonthYear: date.getFullYear()
+    }
+
+    if (date.getMonth() == 0) {
+      //January Edge Case
+      months.prevMonth = 12;
+      years.prevMonthYear -= 1;
+    } 
+
+    if (date.getMonth() == 11) {
+      //Dec Edge Case
+      months.postMonth = 1;
+      years.postMonthYear += 1;
+    } 
+    
+    const paddedMonths = Object.values(months).map((value) => {
+      return(String(value).padStart(2,'0'));
+    })
+
+    const stringYears = Object.values(years).map((value) => {
+      return(value.toString());
+    })
+
+
+    return {months:paddedMonths,years:stringYears};
+  }
+
+  const getCalendarEvents = async (year,month) => {
+    const activities = await fetchActivitiesForMonth(year, month);
+    
+    const calendarEvents = activities.map((activity) => (
+      {
+      id: activity.id,
+      description: activity.sport_type,
+      title: `${activity.name} - ${(activity.distance / 1000).toFixed(2)}km` ,
+      start: new Date(activity.start_date),
+      end: new Date(activity.start_date).setSeconds(new Date(activity.start_date).getSeconds() + activity.elapsed_time),
+      allDay: false,
+    }));
+    return calendarEvents;
+  }
 
 
   const handleMonthChange = useCallback(
     async (date) => {
-      const year = date.getFullYear().toString();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const month1 = String(date.getMonth() ).padStart(2, '0');
-      const month2 = String(date.getMonth() + 2).padStart(2, '0');
-
-      const activities2 = await fetchActivitiesForMonth(year, month2);
-      const activities1 = await fetchActivitiesForMonth(year, month1);
-      const activities = await fetchActivitiesForMonth(year, month);
-
-      const calendarEvents = activities.map((activity) => (
-        {
-        id: activity.id,
-        description: activity.sport_type,
-        title: `${activity.name} - ${(activity.distance / 1000).toFixed(2)}km` ,
-        start: new Date(activity.start_date),
-        end: new Date(activity.start_date).setSeconds(new Date(activity.start_date).getSeconds() + activity.elapsed_time),
-        allDay: false,
-      }));
-
-      const calendarEvents1 = activities1.map((activity) => (
-        {
-        id: activity.id,
-        description: activity.sport_type,
-        title: `${activity.name} - ${(activity.distance / 1000).toFixed(2)}km` ,
-        start: new Date(activity.start_date),
-        end: new Date(activity.start_date).setSeconds(new Date(activity.start_date).getSeconds() + activity.elapsed_time),
-        allDay: false,
-      }));
-
-      const calendarEvents2 = activities2.map((activity) => (
-        {
-        id: activity.id,
-        description: activity.sport_type,
-        title: `${activity.name} - ${(activity.distance / 1000).toFixed(2)}km` ,
-        start: new Date(activity.start_date),
-        end: new Date(activity.start_date).setSeconds(new Date(activity.start_date).getSeconds() + activity.elapsed_time),
-        allDay: false,
-      }));
+      let months = getPrevPostMonths(date).months;
+      let years = getPrevPostMonths(date).years;
+      const calendarEvents = await getCalendarEvents(years[1],months[1]);
+      const calendarEvents1 = await getCalendarEvents(years[0],months[0]);
+      const calendarEvents2 = await getCalendarEvents(years[2],months[2]);
       setEvents([...calendarEvents,...calendarEvents1, ...calendarEvents2]);
       
-    },
-    []
-  );
+    },[]);
 
   useEffect(() => {
     handleMonthChange(currentDate);
