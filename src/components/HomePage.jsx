@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchStravaCredentials, fetchAthleteData, fetchAthleteStats, uploadTimeUpdated, fetchTimeUpdated } from "../services/firebaseService";
+import { fetchStravaCredentials, fetchAthleteData, fetchAthleteStats, uploadTimeUpdated, fetchTimeUpdated, fetchActivitiesForMonth } from "../services/firebaseService";
 import "../styles/HomePage.css";
 import { fetchAndUploadAthleteActivities, fetchAndUploadAthleteData, fetchAndUploadAthleteStats, fetchAndUploadAthleteActivitiesByDate } from "../services/stravaService";
 
@@ -9,6 +9,19 @@ const HomePage = () => {
   const [athleteStats, setAthleteStats] = useState(null);
   const [unixTime, setUnixTime] = useState(new Date());
   const [readableTime, setReadableTime] = useState(null);
+  const [recentActivities, setRecentActivities] = useState(null);
+
+  const initialUpload = async () => {
+    const credentials = await fetchStravaCredentials();
+    const data = await fetchAthleteData();
+    if (credentials) {
+      fetchAndUploadAthleteData(credentials.stravaAccessToken);
+
+      fetchAndUploadAthleteStats(credentials.stravaAccessToken,data.id);
+      fetchAndUploadAthleteActivities(credentials.stravaAccessToken);
+      
+    }
+  }
 
 
   const fetchAndUpload = async () => {
@@ -25,6 +38,7 @@ const HomePage = () => {
       uploadTimeUpdated(readableTime,unixTime);
       
     }
+    getRecentActivities();
   };
 
   const getAthleteInfo = async () => {
@@ -42,17 +56,65 @@ const HomePage = () => {
   const getTimeUpdated = async () => {
     try{
       const fetchedTime = await fetchTimeUpdated();
+      //console.log((new Date()).getMonth());
       setReadableTime(fetchedTime.time_updated);
     } catch (error) {
       console.error("Error fetching readable time: ", error);
     }
   }
 
-  useEffect(() => {
+  const getRecentActivities = async () => {
+    try{
+      let allActivities = [];
+      let currMonth = (new Date()).getMonth() + 1;
+      let currYear = (new Date()).getFullYear();
+      const activities = await fetchActivitiesForMonth(currYear.toString(),String(currMonth).padStart(2,'0'));
+      allActivities = [...activities];
+      let count = 1;
+      while (allActivities.length <= 10) {
+        currMonth -= count;
+        if (currMonth == 1){
+          currYear -= count;
+        }
+        
+        const extraActivities = await fetchActivitiesForMonth(currYear.toString(),String(currMonth).padStart(2,'0'));
+        allActivities = [...extraActivities,...allActivities,];
+      }
+      
+      setRecentActivities((allActivities.slice(allActivities.length - 10, allActivities.length)).reverse());
+    } catch (error){
+      console.error("Error fetching Recent Activities: ", error)
+    }
+  }
 
+  useEffect(() => {
+    //initialUpload();
+    getRecentActivities();
     getTimeUpdated();
     getAthleteInfo();
+    
   }, []);
+
+
+
+
+  const ShowRecentActivities = () => {
+    
+    return (   
+      <div>        
+        <h3>Recent Activities</h3>
+        {
+        recentActivities.map((activity) => (
+          <div key={activity.id}>
+            {activity.name} - {Date(activity.start_date)}
+          </div>
+        ))
+      }
+      </div>
+
+      );
+
+  };
   
 
   return (
@@ -110,8 +172,8 @@ const HomePage = () => {
                 </div>
               </div>
               
-              <div className="update-button-box"  onClick={fetchAndUpload}>
-                <img className="update-button" src="../src/assets/update-arrows.svg"></img>
+              <div className="update-button-box"  >
+                <button onClick={fetchAndUpload}> Refresh Athlete Data</button>
               </div>
             </div>
 
@@ -121,6 +183,8 @@ const HomePage = () => {
           <p>Total Runs: {athleteStats.all_run_totals.count}</p>
           <p>Total Swims: {athleteStats.all_swim_totals.count}</p>
           </div>
+          <ShowRecentActivities />
+
 
         </div>
       ) : (

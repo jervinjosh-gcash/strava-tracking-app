@@ -98,8 +98,12 @@ const TrainingLog = () => {
       const calendarEvents = await getCalendarEvents(years[1],months[1]);
       const calendarEvents1 = await getCalendarEvents(years[0],months[0]);
       const calendarEvents2 = await getCalendarEvents(years[2],months[2]);
+
+      const prevMonthEvents = calendarEvents1.slice(calendarEvents1.length * 0.75,calendarEvents1.length);
+      const postMonthEvents = calendarEvents2.slice(0,calendarEvents2.length * 0.25);
+
       setEvents([...calendarEvents,...calendarEvents1, ...calendarEvents2]);
-      calculateWeeklyDistances([...calendarEvents1,...calendarEvents, ...calendarEvents2]);
+      calculateWeeklyDistances([...prevMonthEvents,...calendarEvents, ...postMonthEvents]);
     },[]);
 
   useEffect(() => {

@@ -154,7 +154,6 @@ export async function fetchAndUploadAthleteActivities(accessToken) {
       }
 
       allActivities = allActivities.concat(activities);
-
       if (activities.length < perPage) {
         break;
       } else {
