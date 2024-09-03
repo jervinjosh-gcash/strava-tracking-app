@@ -3,12 +3,12 @@ import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDDCJIlPtNdUR5WX1MawD_hquo9lm7ksWQ",
-  authDomain: "strava-tracking-app.firebaseapp.com",
-  projectId: "strava-tracking-app",
-  storageBucket: "strava-tracking-app.appspot.com",
-  messagingSenderId: "810033692891",
-  appId: "1:810033692891:web:8d4cff213c40f29af40cfe"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
