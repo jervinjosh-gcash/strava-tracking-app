@@ -13,6 +13,30 @@ const localizer = momentLocalizer(moment);
 const TrainingLog = () => {
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [weeklyDistances, setWeeklyDistances] = useState({});
+
+  const getVisibleMonthRange = () => {
+    const today = moment(); 
+    const startOfMonth = moment(today).startOf("month"); 
+    const endOfMonth = moment(today).endOf("month"); 
+    const startOfVisibleWeek = moment(startOfMonth).startOf("week");
+    const endOfVisibleWeek = moment(endOfMonth).endOf("week");
+    return { start: startOfVisibleWeek, end: endOfVisibleWeek };
+  };
+
+  const calculateWeeklyDistances = (events) => {
+    const weeklyDistances = {};
+
+    events.forEach((event) => {
+      const weekStart = moment(event.start).startOf("week").format("YYYY-MM-DD");
+      if (!weeklyDistances[weekStart]) {
+        weeklyDistances[weekStart] = 0;
+      }
+      weeklyDistances[weekStart] += event.distance;
+    });
+
+    setWeeklyDistances(weeklyDistances);
+  };
 
   const getPrevPostMonths = (date) => {
     let months = {
@@ -61,6 +85,7 @@ const TrainingLog = () => {
       start: new Date(activity.start_date),
       end: new Date(activity.start_date).setSeconds(new Date(activity.start_date).getSeconds() + activity.elapsed_time),
       allDay: false,
+      distance: activity.distance
     }));
     return calendarEvents;
   }
@@ -74,7 +99,7 @@ const TrainingLog = () => {
       const calendarEvents1 = await getCalendarEvents(years[0],months[0]);
       const calendarEvents2 = await getCalendarEvents(years[2],months[2]);
       setEvents([...calendarEvents,...calendarEvents1, ...calendarEvents2]);
-      
+      calculateWeeklyDistances([...calendarEvents1,...calendarEvents, ...calendarEvents2]);
     },[]);
 
   useEffect(() => {
@@ -102,7 +127,17 @@ const TrainingLog = () => {
            }}
           onNavigate={handleNavigate}
           defaultView="month"
+          onSelectEvent={(event) => alert(`Activity: ${event.distance}`)}
         />
+
+      <h3>Weekly Distances</h3>
+      <ul>
+        {Object.entries(weeklyDistances).map(([weekStart, distance]) => (
+          <li key={weekStart}>
+            Week starting {weekStart}: {(distance / 1000).toFixed(2)} km
+          </li>
+        ))}
+      </ul>
       </div>
     </div>
   );
