@@ -11,6 +11,7 @@ const Navbar = ({user, onLogout}) => {
   }
   return (
     <div className="navbar">
+      <img className="navbar-icon" src="src/assets/icon.svg"></img>
       <nav>
         <NavLink to="/" className="nav-link">
           Home

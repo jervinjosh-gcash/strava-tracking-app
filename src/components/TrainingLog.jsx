@@ -13,18 +13,44 @@ const localizer = momentLocalizer(moment);
 
 
 
-const TrainingLog = () => {
+const TrainingLog = (user) => {
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weeklyDistances, setWeeklyDistances] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
 
-  const calculateWeeklyDistances = (events) => {
+  const calculateWeeklyDistances = (event,date) => {
+    console.log("getting weekly distance");
     const weeklyDistances = {};
 
-    events.forEach((event) => {
-      const weekStart = moment(event.start).startOf("week").format("YYYY-MM-DD");
+    const startOfMonth = moment(date).startOf('month');
+    const endOfMonth = moment(date).endOf('month');
+
+    const endOfPrevMonth = moment(date).subtract(1, 'months').endOf('month');
+    const lastWeekOfPrevMonth = endOfPrevMonth.startOf('week');
+
+
+    const startOfNextMonth = moment(date).add(1, 'months').startOf('month');
+    const firstWeekOfNextMonth = startOfNextMonth.startOf('week');
+
+    // Filter events based on the weeks of interest
+    const filteredEvents = event.filter((event) => {
+      const eventDate = moment(event.start);
+      const eventWeekStart = moment(eventDate).startOf('week');
+
+      const withinCurrentMonth =
+        eventWeekStart.isSameOrAfter(startOfMonth) && eventWeekStart.isSameOrBefore(endOfMonth);
+
+      const isLastWeekOfPrevMonth = eventWeekStart.isSame(lastWeekOfPrevMonth, 'week');
+
+      const isFirstWeekOfNextMonth = eventWeekStart.isSame(firstWeekOfNextMonth, 'week');
+
+      return withinCurrentMonth || isLastWeekOfPrevMonth || isFirstWeekOfNextMonth;
+    });
+
+
+    filteredEvents.forEach((event) => {
+      const weekStart = moment(event.start).startOf('week').format('YYYY-MM-DD');
       if (!weeklyDistances[weekStart]) {
         weeklyDistances[weekStart] = 0;
       }
@@ -34,16 +60,16 @@ const TrainingLog = () => {
     setWeeklyDistances(weeklyDistances);
   };
 
-  const getPrevPostMonths = (date) => {
+  const getPrevNextMonths = (date) => {
     let months = {
       prevMonth: date.getMonth(),
       currMonth: date.getMonth() + 1,
-      postMonth: date.getMonth() + 2
+      nextMonth: date.getMonth() + 2
     }
     let years = {
       prevMonthYear: date.getFullYear(),
       currMonthYear: date.getFullYear(),
-      postMonthYear: date.getFullYear()
+      nextMonthYear: date.getFullYear()
     }
 
     if (date.getMonth() == 0) {
@@ -54,8 +80,8 @@ const TrainingLog = () => {
 
     if (date.getMonth() == 11) {
       //Dec Edge Case
-      months.postMonth = 1;
-      years.postMonthYear += 1;
+      months.nextMonth = 1;
+      years.nextMonthYear += 1;
     } 
     
     const paddedMonths = Object.values(months).map((value) => {
@@ -92,25 +118,24 @@ const TrainingLog = () => {
 
   const handleMonthChange = useCallback(
     async (date) => {
-      if (!isLoggedIn) return;
-      let months = getPrevPostMonths(date).months;
-      let years = getPrevPostMonths(date).years;
+      if (!user) {
+        console.log("logging-out");
+        return;
+      }
+      let months = getPrevNextMonths(date).months;
+      let years = getPrevNextMonths(date).years;
       const calendarEvents = await getCalendarEvents(years[1],months[1]);
       const calendarEvents1 = await getCalendarEvents(years[0],months[0]);
       const calendarEvents2 = await getCalendarEvents(years[2],months[2]);
 
-      const prevMonthEvents = calendarEvents1.slice(calendarEvents1.length * 0.75,calendarEvents1.length);
-      const postMonthEvents = calendarEvents2.slice(0,calendarEvents2.length * 0.25);
-
+      console.log("Getting events");
       setEvents([...calendarEvents,...calendarEvents1, ...calendarEvents2]);
-      calculateWeeklyDistances([...prevMonthEvents,...calendarEvents, ...postMonthEvents]);
-    },[isLoggedIn]);
+      calculateWeeklyDistances([...calendarEvents1,...calendarEvents, ...calendarEvents2],date);
+    },[user]);
 
   useEffect(() => {
     handleMonthChange(currentDate);
-    return () => {
-      setIsLoggedIn(false);
-    };
+
   }, [currentDate]);
 
 
@@ -125,16 +150,16 @@ const TrainingLog = () => {
 
     switch (event.type.toLowerCase()) {
       case "run":
-        backgroundColor = "#ffebee"; // Light Red
+        backgroundColor = "#ffebee";
         break;
       case "ride":
-        backgroundColor = "#fff9c4"; // Light Yellow
+        backgroundColor = "#fff9c4";
         break;
       case "swim":
-        backgroundColor = "#e0f7fa"; // Light Blue
+        backgroundColor = "#e0f7fa";
         break;
       default:
-        backgroundColor = "#efebe9"; // Light Brown
+        backgroundColor = "#efebe9"; 
     }
 
     return {
@@ -152,7 +177,6 @@ const TrainingLog = () => {
 
   return (
     <div className="training-log-page">
-      <h2>Training Log</h2>
       <div className="calendar-box">
         
         <Calendar

@@ -45,7 +45,7 @@ const App = () => {
         
           <Route path="/training-log" element={user ? (
           <div>
-            <TrainingLog />
+            <TrainingLog user={user} />
           </div>
         ) : (
           <Login onLoginSuccess={() => setUser(auth.currentUser)} />

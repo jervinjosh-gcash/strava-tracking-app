@@ -11,12 +11,14 @@ body {
 }
 
 .training-log-page {
-  width: 90%;
   max-width: 1200px;
   background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 h2 {
@@ -27,28 +29,30 @@ h2 {
 
 .calendar-box {
   margin-bottom: 20px;
+
 }
 
 .weekly-volume-box {
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
-  padding: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
   background-color: #fafafa;
   border-radius: 8px;
   border: 1px solid #ddd;
   justify-content: center;
   align-items: center;
+  height: 89.5vh;
 }
 
 .weekly-volume-header {
   text-align: center;
-  margin-bottom: 10px;
 }
 
 .weekly-volume {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 200px;
+  width: 180px;
   background-color: #ebebeb;
   border-radius: 8px;
   border: 1px solid #ddd;
