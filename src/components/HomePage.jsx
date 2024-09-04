@@ -40,7 +40,7 @@ const HomePage = () => {
     if (credentials) {
       fetchAndUploadAthleteData(credentials.stravaAccessToken);
       fetchAndUploadAthleteStats(credentials.stravaAccessToken,athleteData.id);
-      //fetchAndUploadAthleteActivitiesByDate(credentials.stravaAccessToken, fetchedTime.unix_time_updated);
+      fetchAndUploadAthleteActivitiesByDate(credentials.stravaAccessToken, fetchedTime.unix_time_updated);
       uploadTimeUpdated(readableTime,unixTime);
       
     }

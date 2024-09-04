@@ -4,7 +4,7 @@ import { uploadAthleteData , uploadAthleteStats, uploadAthleteActivities } from 
 const STRAVA_API_URL = "https://www.strava.com/api/v3";
 const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 
-
+// Acquire short lived access token from strava
 export async function fetchStravaAccessToken(refreshToken, clientId, clientSecret) {
   try {
     const response = await fetch(STRAVA_TOKEN_URL, {
@@ -32,63 +32,67 @@ export async function fetchStravaAccessToken(refreshToken, clientId, clientSecre
   }
 }
 
-export async function fetchAthleteData(accessToken) {
-  try {
-    const response = await fetch(`${STRAVA_API_URL}/athlete`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+// // Fetch Athlete Data from strava
+// export async function fetchAthleteData(accessToken) {
+//   try {
+//     const response = await fetch(`${STRAVA_API_URL}/athlete`, {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     });
 
-    if (!response.ok) {
-      throw new Error(`Error fetching athlete data: ${response.statusText}`);
-    }
+//     if (!response.ok) {
+//       throw new Error(`Error fetching athlete data: ${response.statusText}`);
+//     }
 
-    return response.json();
-  } catch (error) {
-    console.error("Error fetching athlete data:", error);
-    throw error;
-  }
-}
+//     return response.json();
+//   } catch (error) {
+//     console.error("Error fetching athlete data:", error);
+//     throw error;
+//   }
+// }
 
-export async function fetchActivities(accessToken) {
-  try {
-    const response = await fetch(`${STRAVA_API_URL}/athlete/activities`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+// Fetch Athlete activities
+// export async function fetchActivities(accessToken) {
+//   try {
+//     const response = await fetch(`${STRAVA_API_URL}/athlete/activities`, {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     });
 
-    if (!response.ok) {
-      throw new Error(`Error fetching activities: ${response.statusText}`);
-    }
-    console.log(response.json)
-    return response.json();
-  } catch (error) {
-    console.error("Error fetching activities:", error);
-    throw error;
-  }
-}
+//     if (!response.ok) {
+//       throw new Error(`Error fetching activities: ${response.statusText}`);
+//     }
+//     console.log(response.json)
+//     return response.json();
+//   } catch (error) {
+//     console.error("Error fetching activities:", error);
+//     throw error;
+//   }
+// }
 
-export async function fetchAthleteStats(accessToken,athleteId) {
-  try {
-    const response = await fetch(`${STRAVA_API_URL}/athletes/${athleteId}/stats`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+// // Fetch Athlete stats from strava
+// export async function fetchAthleteStats(accessToken,athleteId) {
+//   try {
+//     const response = await fetch(`${STRAVA_API_URL}/athletes/${athleteId}/stats`, {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     });
 
-    if (!response.ok) {
-      throw new Error(`Error fetching athlete data: ${response.statusText}`);
-    }
+//     if (!response.ok) {
+//       throw new Error(`Error fetching athlete data: ${response.statusText}`);
+//     }
 
-    return response.json();
-  } catch (error) {
-    console.error("Error fetching athlete data:", error);
-    throw error;
-  }
-}
+//     return response.json();
+//   } catch (error) {
+//     console.error("Error fetching athlete data:", error);
+//     throw error;
+//   }
+// }
 
+// Fetch Athlete Data from strava then upload to firebase
 export async function fetchAndUploadAthleteData(accessToken) {
   try {
     const response = await fetch(`${STRAVA_API_URL}/athlete`, {
@@ -104,6 +108,7 @@ export async function fetchAndUploadAthleteData(accessToken) {
   }
 }
 
+// Fetch Athlete stats from strava then upload to firebase
 export async function fetchAndUploadAthleteStats(accessToken,athleteId) {
   try {
     const response = await fetch(`${STRAVA_API_URL}/athletes/${athleteId}/stats`, {
@@ -119,6 +124,8 @@ export async function fetchAndUploadAthleteStats(accessToken,athleteId) {
   }
 }
 
+// Fetch Athlete activities by date from strava then upload to firebase
+// used for updating database
 export async function fetchAndUploadAthleteActivitiesByDate(accessToken,time_updated){
   try {
     const response = await fetch(`${STRAVA_API_URL}/athlete/activities?per_page=?after=${time_updated}`, {
@@ -133,6 +140,7 @@ export async function fetchAndUploadAthleteActivitiesByDate(accessToken,time_upd
   }
 }
 
+// Fetch all athlete activities from strava then upload to firebase
 export async function fetchAndUploadAthleteActivities(accessToken) {
   let page = 1;
   const perPage = 200;

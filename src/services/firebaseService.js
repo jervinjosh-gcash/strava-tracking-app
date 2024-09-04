@@ -1,8 +1,10 @@
 import { collection, doc, getDoc, setDoc, writeBatch, getDocs, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { fetchActivities, fetchStravaAccessToken } from "./stravaService";
-import firebase from "firebase/compat/app";
+import {fetchStravaAccessToken } from "./stravaService";
 
+
+// Strava credentials are stored in firebase. Can only be accessed by logged-in user
+// Use credentials to acquire short-lived access token.
 export async function fetchStravaCredentials() {
   const user = auth.currentUser;
   if (!user) {
@@ -27,6 +29,7 @@ export async function fetchStravaCredentials() {
   }
 }
 
+// Upload athlete data to firebase
 export async function uploadAthleteData(athleteData) {
   const user = auth.currentUser;
   try {
@@ -38,6 +41,7 @@ export async function uploadAthleteData(athleteData) {
   }
 }
 
+// Upload athlete stats to firebase
 export async function uploadAthleteStats(athleteStats) {
   const user = auth.currentUser;
   try {
@@ -49,6 +53,8 @@ export async function uploadAthleteStats(athleteStats) {
   }
 }
 
+
+// Upload athlete activities. Categorized by years and months.
 export async function uploadAthleteActivities(athleteActivities){
   const user = auth.currentUser;
   try {
@@ -70,6 +76,7 @@ export async function uploadAthleteActivities(athleteActivities){
 
 }
 
+// Fetch user-specific athlete data.
 export async function fetchAthleteData() {
   const user = auth.currentUser;
   try {
@@ -88,6 +95,8 @@ export async function fetchAthleteData() {
   }
 }
 
+
+// Fetch user-specific athlete stats.
 export async function fetchAthleteStats() {
   const user = auth.currentUser;
   try {
@@ -106,6 +115,7 @@ export async function fetchAthleteStats() {
   }
 }
 
+// Fetch athlete activities based on month.
 export async function fetchActivitiesForMonth(year,month) {
   const user = auth.currentUser;
   try {
@@ -123,6 +133,7 @@ export async function fetchActivitiesForMonth(year,month) {
 
 }
 
+// Upload time when database data was last updated
 export async function uploadTimeUpdated(time_updated,unix_time_updated){
   const user = auth.currentUser;
   try {
@@ -133,6 +144,7 @@ export async function uploadTimeUpdated(time_updated,unix_time_updated){
   }
 }
 
+// Fetch time of database last update.
 export async function fetchTimeUpdated(){
   const user = auth.currentUser;
   try {
