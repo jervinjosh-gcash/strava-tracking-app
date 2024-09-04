@@ -11,7 +11,7 @@ const Navbar = ({user, onLogout}) => {
   }
   return (
     <div className="navbar">
-      <img className="navbar-icon" src="src/assets/icon.svg"></img>
+      <img className="navbar-icon" src="/icon.svg" alt="Stravee Icon"></img>
       <nav>
         <NavLink to="/" className="nav-link">
           Home

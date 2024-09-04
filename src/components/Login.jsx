@@ -21,7 +21,7 @@ const Login = ({ onLoginSuccess }) => {
 
   return (
     <div className="login-window">
-      <img src="src/assets/icon.svg"></img>
+      <img src="/icon.svg" alt="Stravee Icon"></img>
       <h2>Personal Strava Training Log</h2>
       <div className="login-box">
         <div className="form-box">
