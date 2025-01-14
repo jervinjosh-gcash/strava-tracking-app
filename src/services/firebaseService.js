@@ -10,7 +10,7 @@ export async function fetchStravaCredentials() {
   if (!user) {
     throw new Error("User is not authenticated.");
   }
-
+  console.log("user aquired");
   const userRef = doc(db, "users", user.uid);
   try {
     const userDoc = await getDoc(userRef);
